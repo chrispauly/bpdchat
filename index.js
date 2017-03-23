@@ -25,9 +25,11 @@ io.on('connection', function (socket) {
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
+    var dt = new Date();
     var userDataMsg = {
       username: socket.username,
-      message: data
+      message: data.message,
+      timestamp: data.timestamp
     };
     // save last n messages
     lastMessages.push(userDataMsg);

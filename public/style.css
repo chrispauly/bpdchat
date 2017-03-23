@@ -153,11 +153,12 @@ ul {
 }
 
 .message{
-    padding: 5px;
-    background: rgba(0, 0, 0, 0.27);
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.4);
     margin: 10px 0;
-    border: 1px solid rgba(220, 220, 220, 0.51);
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.35);
+    /* border: 1px solid rgba(220, 220, 220, 0.51); */
+    /* box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.35); */
+    border-radius: 5px;
 }
 
 .message.typing {
@@ -244,5 +245,13 @@ ul {
     opacity: 1;
     -webkit-transform: none;
     transform: none;
+  }
+}
+
+@media (max-width: 768px){
+  .timestamp {
+     float: none;
+     font-size: 75%;
+     margin-left: 5px;
   }
 }

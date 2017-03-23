@@ -63,12 +63,20 @@ $(function() {
     // if there is a non-empty message and a socket connection
     if (message && connected) {
       $inputMessage.val('');
+      var dt = new Date(); 
+      var timestamp = ("0" + (dt.getMonth() + 1)).slice(-2) + "/" 
+                       + ("0" + dt.getDate()).slice(-2) + "/" 
+                       + dt.getFullYear() + " " 
+                       + ("0" + dt.getHours()).slice(-2) + ":" 
+                       + ("0" + dt.getMinutes()).slice(-2) + ":" 
+                       + ("0" + dt.getSeconds()).slice(-2);
       addChatMessage({
         username: username,
-        message: message
+        message: message,
+        timestamp: timestamp
       });
       // tell server to execute 'new message' and send along one parameter
-      socket.emit('new message', message);
+      socket.emit('new message', { message: message, timestamp: timestamp });
     }
   }
 
@@ -97,18 +105,25 @@ $(function() {
       
     var $messageBodyDiv = $('<span class="messageBody">').text(data.message);
     
+    var msg_lc = data.message.toLowerCase();
     
-    if(data.message.toLowerCase().includes("http://") || data.message.toLowerCase().includes("https://")){
-      $messageBodyDiv = $('<span class="messageBody">').html(data.message.replace(/(https?:\/\/([^\s]+[a-zA-Z]))/ig,'<a href="$1" target="_blank">$1</a>'));
+    if(msg_lc.includes("http://") || msg_lc.includes("https://")){
+      
+      if(msg_lc.indexOf("youtube.com") > -1) {
+        $messageBodyDiv = $('<span class="messageBody">').html('<iframe width="420" height="240" src="https://www.youtube.com/embed/'+ data.message.split("?v=")[1] +'"?controls=1></iframe>')
+      }
+      else 
+      {
+        $messageBodyDiv = $('<span class="messageBody">').html(data.message.replace(/(https?:\/\/([\?\/0-9A-Za-z-\\.@:%_\+~#=]+))/ig,'<a href="$1" target="_blank">$1</a>'));
+      }
     }
     else{
       $messageBodyDiv = $('<span class="messageBody">').text(data.message);
     }
     
-    var dt = new Date();
-    var dtstring = dt.getMonth() + " - " + dt.getDate() + " " + dt.getHours() + ":" + dt.getMinutes() + ":" + getSeconds();
-
-    $messageBodyDiv.append("<span class='timestamp'>" + dtstring + "</span>"); 
+    if(data.timestamp) {
+      $messageBodyDiv.append("<span class='timestamp'>" + data.timestamp + "</span>"); 
+    }
 
     var typingClass = data.typing ? 'typing' : '';
     var $messageDiv = $('<li class="message"/>')
@@ -305,6 +320,7 @@ function playSound() {
     if(!focus) unreadMessages++;
     //update the document title to include unread message count if blurred
     updateTitle();
+    //Add time
     addChatMessage(data);
   });
 
